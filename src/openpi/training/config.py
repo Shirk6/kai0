@@ -90,6 +90,9 @@ class DataConfig:
     # LeRobot dataset is using different keys to represent the action.
     action_sequence_keys: Sequence[str] = ("actions",)
 
+    # Optional subset of episode indices to use for dataset loading.
+    episodes: list[int] | None = None
+
     # If true, will use the LeRobot dataset task to define the prompt.
     prompt_from_task: bool = False
 
@@ -1215,7 +1218,21 @@ _CONFIGS = [
         num_workers=8,
         batch_size=256,
     ),
-
+    TrainConfig(
+    name="pi05_insert_mouse_battery",
+    model=pi0_config.Pi0Config(pi05=True),
+    data=LerobotAgilexDataConfig(
+        repo_id="qmddn/pi05-insert-mouse-battery",
+        assets=AssetsConfig(asset_id="hdf5_assemble_battery_ruikai_both_arms_pi05"),
+        default_prompt="Insert the battery into the mouse.",
+        use_delta_joint_actions=False,
+    ),
+    weight_loader=weight_loaders.CheckpointWeightLoader("gs://openpi-assets/checkpoints/pi05_base/params"),
+    num_train_steps=100_000,
+    keep_period=5000,
+    num_workers=8,
+    batch_size=256,
+    ),
     #************************Advantage Estimator***************************
     TrainConfig(
         name="ADVANTAGE_TORCH_KAI0_FLATTEN_FOLD",
